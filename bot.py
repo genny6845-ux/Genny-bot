@@ -19,11 +19,11 @@ def webhook():
     text = update.message.text
 
     if text == "/start":
-        bot.send_message(chat_id=chat_id, text="🚀 Bot attivo! Pronto a inviarti i ribilanciamenti.")
+        bot.send_message(chat_id=chat_id, text="Bot avviato!")
     elif text == "/status":
-        bot.send_message(chat_id=chat_id, text="📊 Tutto sotto controllo.")
+        bot.send_message(chat_id=chat_id, text="Bot attivo e funzionante.")
     else:
-        bot.send_message(chat_id=chat_id, text="🤖 Comando non riconosciuto.")
+        bot.send_message(chat_id=chat_id, text="Comando non riconosciuto.")
 
     return 'ok'
 
