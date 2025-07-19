@@ -1,26 +1,31 @@
+from flask import Flask, request
+import telegram
 import os
-import requests
-import time
 
-TOKEN = os.getenv('TELEGRAM_TOKEN')
-CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+TOKEN = os.environ.get('TOKEN')
+CHAT_ID = os.environ.get('CHAT_ID')
+bot = telegram.Bot(token=TOKEN)
 
-def send_message(text):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    payload = {
-        'chat_id': CHAT_ID,
-        'text': text,
-        'parse_mode': 'HTML'
-    }
-    requests.post(url, data=payload)
+app = Flask(__name__)
 
-def check_portfolio():
-    # Qui metteremo la logica per leggere i dati da eToro
-    # Per ora simuliamo un ribilanciamento
-    return "🔔 Ribilanciamento completato: +3% rendimento 🚀"
+@app.route('/')
+def home():
+    return 'Bot is running!'
 
-if __name__ == "__main__":
-    while True:
-        message = check_portfolio()
-        send_message(message)
-        time.sleep(3600)  # ogni ora
+@app.route('/{}'.format(TOKEN), methods=['POST'])
+def webhook():
+    update = telegram.Update.de_json(request.get_json(force=True), bot)
+    chat_id = update.message.chat.id
+    text = update.message.text
+
+    if text == "/start":
+        bot.send_message(chat_id=chat_id, text="🚀 Bot attivo! Pronto a inviarti i ribilanciamenti.")
+    elif text == "/status":
+        bot.send_message(chat_id=chat_id, text="📊 Tutto sotto controllo.")
+    else:
+        bot.send_message(chat_id=chat_id, text="🤖 Comando non riconosciuto.")
+
+    return 'ok'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
